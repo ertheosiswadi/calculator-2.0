@@ -1,6 +1,21 @@
 var input_stack = [];
 var finish = false;
 
+let syntax_error = {
+	name: 'SYNTAX ERROR',
+	message:"♥ SYNTAX ERROR ♥"
+}
+
+let math_error = {
+	name: 'MATH ERROR',
+	message:"◈ MATH ERROR ◈"
+}
+
+let over_error = {
+	name: 'OUT OF BOUNDS ERROR',
+	message:"◈ MATH ERROR ◈"
+}
+
 $(document).ready(() =>{
 	$('.keypad_n').click((e)=>{
 		if(finish)
@@ -49,42 +64,50 @@ $(document).ready(() =>{
 	});
 
 	$('#equal').click(() => {
-		var result = '';
-		try
+		if(input_stack.length != 0)
 		{
-			result = solve(make_tokens(input_stack.join("")));
-			if(isNaN(result))
+			var result = '';
+			try
 			{
-				throw "♥ SYNTAX ERROR ♥"; 
+				result = solve(make_tokens(input_stack.join("")));
+				if(isNaN(result))
+				{
+					console.log(result);
+					throw syntax_error; 
+				}
+				else if(result == Infinity)
+				{
+					throw math_error; 
+				}
+				result = result.toString();
+				//check if result is too long and cannot be displayed
+				if(result.length > 17 && result.includes('.')) //refactor and make a global constant
+				{
+					result = result.slice(0,17);
+				}
+				$('#math').prop('readonly', false);
+				$('#math').val(result);
+				$('#math').prop('readonly', true);
+
+				input_stack.length = 0;
+				input_stack.push(result);
+
+				finish = true;
 			}
-			else if(result == Infinity)
+			catch(err)
 			{
-				throw "◈ MATH ERROR ◈"; 
+				console.error(err.name);
+				if(err.name == 'RangeError')
+				{
+					err.message = '♥ SYNTAX ERROR ♥'
+				}
+				$('#math').prop('readonly', false);
+				$('#math').val(err.message);
+				$('#math').prop('readonly', true);
+
+				input_stack.length = 0;
+				finish = true;
 			}
-			result = result.toString();
-			//check if result is too long and cannot be displayed
-			if(result.length > 17) //refactor and make a global constant
-			{
-				result = result.slice(0,17);
-			}
-			$('#math').prop('readonly', false);
-			$('#math').val(result);
-			$('#math').prop('readonly', true);
-
-			input_stack.length = 0;
-			input_stack.push(result);
-
-			finish = true;
-		}
-		catch(err)
-		{
-			console.error(err);
-			$('#math').prop('readonly', false);
-			$('#math').val(err);
-			$('#math').prop('readonly', true);
-
-			input_stack.length = 0;
-			finish = true;
 		}
 	});
 
@@ -97,6 +120,119 @@ function refresh_display()
 	$('#math').prop('readonly', true);
 }
 
+function make_tokens(input)//input is a string and not an array, careful
+{
+	var collect = false;
+	var token = '';
+	var toReturn = [];
+	var n_period = 0;
+	var layer = 0;
+
+	var e;
+	// Array.from(input).forEach((e) =>
+	for(i = 0; i < input.length; i++)
+	 {
+	 	e = input[i];
+		console.log('E is: ', e);
+		if(!isWhitespace(e))
+		{
+			if(!collect)
+			{
+				if(isNumber(e) || isPeriod(e) || isAlphabet(e))
+				{
+					if(isPeriod(e))//refactor
+					{
+						n_period++;
+					}
+					if(n_period > 1)//too many periods
+					{
+						throw syntax_error;
+					}
+
+					collect = true;
+					token = e;
+				}
+				else
+				{
+					e = ifOperator(e);
+
+					if((layer = updateLayer(e, layer)) < 0)
+					{
+						throw syntax_error;
+					}
+					// console.log(isOperator(e), 'e: ', e, 'toReturn: ', toReturn);
+					
+					console.log('length toRet: ',toReturn.length)
+					if(toReturn.length > 0)
+					{
+						
+						if(isOperator(e) && isOperator(toReturn[toReturn.length -1]))
+						{
+							throw syntax_error;
+						}
+					}
+					
+					token = e;
+					toReturn.push(e);
+				}
+			}
+			else
+			{
+				if(isNumber(e) || isPeriod(e) || isAlphabet(e))
+				{
+					if(isPeriod(e))
+					{
+						n_period++;
+					}
+					if(n_period > 1)//too many periods
+					{
+						throw syntax_error;
+					}
+
+					token += e;
+				}
+				else
+				{
+					e = ifOperator(e);
+					collect = false;
+					toReturn.push(token);
+
+
+					if((layer = updateLayer(e, layer)) < 0)
+					{
+						throw syntax_error;
+					}
+					if(toReturn.length > 0)
+					{
+						if(isOperator(e) && isOperator(toReturn[toReturn.length - 1]))
+						{
+							throw syntax_error;
+						}
+					}
+
+
+					n_period = 0;
+					token = e;
+					toReturn.push(token);
+				}
+			}
+			// console.log('token: ', token, ' collect: ', collect, ' e: ', e, ' toReturn: ', toReturn);
+		}	
+	}
+	// );
+	console.log('final toReturn:', toReturn.length);
+
+	if(collect)
+		toReturn.push(token);
+
+	if(layer != 0)
+	{
+		throw syntax_error;
+	}
+
+	console.log('tokens: ', toReturn);
+	return toReturn;
+}
 function solve(t)
 {
 	var outer_bf = [];
@@ -107,7 +243,11 @@ function solve(t)
 	var trig = false;
 	var trig_func = '';
 
-	t.forEach((e) => {
+	var e;
+	var i;
+	for(i = 0; i < t.length; i++)
+	{
+		e = t[i];
 		if(!collect)
 		{
 			if(e == '(')
@@ -116,10 +256,14 @@ function solve(t)
 			}
 			else if(e == ')')
 			{
-				throw "♥ SYNTAX ERROR ♥";
+				throw syntax_error;
 			}
 			else if(e == 'sin' || e == 'cos')
 			{
+				if(t[i+1] != '(')
+				{
+					throw syntax_error; 
+				}
 				trig_func = e;
 				trig = true;
 			}
@@ -134,7 +278,7 @@ function solve(t)
 			{
 				if(inner_bf.length == 0)
 				{
-					throw "♥ SYNTAX ERROR ♥"; 
+					throw syntax_error; 
 				}
 				if(trig)
 				{
@@ -171,124 +315,82 @@ function solve(t)
 				inner_bf.push(e);
 			}
 		}
-	});
+	}
 	console.log('outer_bf: ', outer_bf);
-	return solve_2(outer_bf);
-}
-
-function make_tokens(input)//input is a string and not an array, careful
-{
-	var collect = false;
-	var token = '';
-	var toReturn = [];
-	var n_period = 0;
-	var layer = 0;
-
-	var e;
-	// Array.from(input).forEach((e) =>
-	for(i = 0; i < input.length; i++)
-	 {
-	 	e = input[i];
-		console.log('E is: ', e);
-		if(!isWhitespace(e))
-		{
-			if(!collect)
-			{
-				if(isNumber(e) || isPeriod(e) || isAlphabet(e))
-				{
-					if(isPeriod(e))//refactor
-					{
-						n_period++;
-					}
-					if(n_period > 1)//too many periods
-					{
-						throw "♥ SYNTAX ERROR ♥";
-					}
-
-					collect = true;
-					token = e;
-				}
-				else
-				{
-					e = ifOperator(e);
-
-					if((layer = updateLayer(e, layer)) < 0)
-					{
-						throw "♥ SYNTAX ERROR ♥";
-					}
-					// console.log(isOperator(e), 'e: ', e, 'toReturn: ', toReturn);
-					
-					console.log('length toRet: ',toReturn.length)
-					if(toReturn.length > 0)
-					{
-						
-						if(isOperator(e) && isOperator(toReturn[toReturn.length -1]))
-						{
-							throw "♥ SYNTAX ERROR ♥";
-						}
-					}
-					
-					token = e;
-					toReturn.push(e);
-				}
-			}
-			else
-			{
-				if(isNumber(e) || isPeriod(e) || isAlphabet(e))
-				{
-					if(isPeriod(e))
-					{
-						n_period++;
-					}
-					if(n_period > 1)//too many periods
-					{
-						throw "♥ SYNTAX ERROR ♥";
-					}
-
-					token += e;
-				}
-				else
-				{
-					e = ifOperator(e);
-					collect = false;
-					toReturn.push(token);
-					
-
-					if((layer = updateLayer(e, layer)) < 0)
-					{
-						throw "♥ SYNTAX ERROR ♥";
-					}
-					if(toReturn.length > 0)
-					{
-						if(isOperator(e) && isOperator(toReturn[toReturn.length - 1]))
-						{
-							throw "♥ SYNTAX ERROR ♥";
-						}
-					}
-
-
-					n_period = 0;
-					token = e;
-					toReturn.push(token);
-				}
-			}
-			// console.log('token: ', token, ' collect: ', collect, ' e: ', e, ' toReturn: ', toReturn);
-		}	
-	}
-	// );
-	console.log('final toReturn:', toReturn.length);
-
-	if(collect)
-		toReturn.push(token);
-
-	if(layer != 0)
+	
+	try
 	{
-		throw "♥ SYNTAX ERROR ♥";
+		let n = solve_2(outer_bf);
+		if(n > 9007199254740991)
+		{
+			throw over_error;
+		}
+		return n;
 	}
-
-	console.log('tokens: ', toReturn);
-	return toReturn;
+	catch(err)
+	{
+		throw err;
+	}
 }
+function solve_2(tokens)
+{
+	if(tokens.length == 1)
+	{
+		return parseFloat(tokens);
+	}
+	else if (tokens.length == 2)
+	{
+		if(tokens[0] == '-' && !isNaN(tokens[1]))
+		{
+			return parseFloat(tokens.join(''));
+		}
+		else
+		{
+			throw syntax_error;
+		}
+	}
+	else if(tokens.length == 3)
+	{
+		var op = tokens[1];
+		var arg_1 = parseFloat(tokens[0]);
+		var arg_2 = parseFloat(tokens[2]);
+
+		return calculate(op, arg_1, arg_2);
+	}
+	else
+	{	
+		var start = 1;
+		//check if it starts with an operator, treat it as a sign
+		if(tokens[0] == '+') 
+		{
+			start = 2;
+		}
+		else if (tokens[0] == '-')
+		{
+			tokens[1] = '-' + tokens[1];
+			tokens.shift();
+		}
+
+		console.log('tokens0: ', tokens[0], ' start: ', start);
+		for(i = start; i < tokens.length; i += 2)
+		{
+			if(tokens[i] == '+' || tokens[i] == '-')
+			{
+				var op = tokens[i];
+				var arg_1 = solve_2(tokens.slice(start-1,i));
+				var arg_2 = solve_2(tokens.slice(i + 1));
+
+				return calculate(op, arg_1, arg_2);
+			}
+		}
+		var op = tokens[tokens.length-2];
+		var arg_1 = solve_2(tokens.slice(start-1, tokens.length-2));
+		var arg_2 = tokens[tokens.length -1];
+
+		return calculate(op, arg_1, arg_2);
+	}
+}
+
 
 function updateLayer(c, layer)
 {
@@ -310,7 +412,11 @@ function ifOperator(c)
 		'×':'*',
 		'÷':'/',
 		'−':'-',
-		'+': '+'
+		'+':'+',
+		'*':'*',
+		'/':'/',
+		'-':'-',
+		'+':'+'
 	};
 	if(isOperator(c))
 	{
@@ -378,58 +484,6 @@ function isPeriod(c)
 		return true;
 	}
 	return false;
-}
-
-function solve_2(tokens)
-{
-	if(tokens.length == 1)
-	{
-		return parseFloat(tokens[0]);
-	}
-	else if (tokens.length == 2)
-	{
-		//return error
-	}
-	else if(tokens.length == 3)
-	{
-		var op = tokens[1];
-		var arg_1 = parseFloat(tokens[0]);
-		var arg_2 = parseFloat(tokens[2]);
-
-		return calculate(op, arg_1, arg_2);
-	}
-	else
-	{	
-		var start = 1;
-		//check if it starts with an operator, treat it as a sign
-		if(tokens[0] == '+') 
-		{
-			start = 2;
-		}
-		else if (tokens[0] == '-')
-		{
-			tokens[1] = '-' + tokens[1];
-			tokens.shift();
-		}
-
-		console.log('tokens0: ', tokens[0], ' start: ', start);
-		for(i = start; i < tokens.length; i += 2)
-		{
-			if(tokens[i] == '+' || tokens[i] == '-')
-			{
-				var op = tokens[i];
-				var arg_1 = solve_2(tokens.slice(start-1,i));
-				var arg_2 = solve_2(tokens.slice(i + 1));
-
-				return calculate(op, arg_1, arg_2);
-			}
-		}
-		var op = tokens[tokens.length-2];
-		var arg_1 = solve_2(tokens.slice(start-1, tokens.length-2));
-		var arg_2 = tokens[tokens.length -1];
-
-		return calculate(op, arg_1, arg_2);
-	}
 }
 
 function calculate(op, a, b)
