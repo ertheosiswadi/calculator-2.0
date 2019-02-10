@@ -1,1 +1,1 @@
-<?php header( 'Location: /Calculator.html' ) ;  ?>
+<?php header( 'Location: /calculator.html' ) ;  ?>
