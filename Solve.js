@@ -1,16 +1,86 @@
+var input_stack = [];
+var finish = false;
+
 $(document).ready(() =>{
 	$('#confirmButton').click(() => {
 		console.log("---------");
 		var string = $('#math').val();
 		console.log('original: ', string);
 		console.log('answer: ', solve(make_tokens(string)));
-	})
-	$('#sin').click(()=>{
-		var initial = $('#math').val();
-		$('#math').val()
+	});
+
+	$('.keypad_n').click((e)=>{
+		if(finish)
+		{
+			input_stack.length = 0;
+			finish = false;
+		}
+		var key_id = $(e.target)[0].id
+		var input = $('#'+key_id).html();
+
+		input_stack.push(input);
+		refresh_display();
+	});
+
+	$('.keypad_op').click((e)=> {
+		finish = false;
+		var key_id = $(e.target)[0].id
+		var input = $('#'+key_id).html();
+
+		input_stack.push(input);
+		refresh_display();
 	})
 
+	$('.keypad_trig').click((e)=> {
+		if(finish)
+		{
+			input_stack.length = 0;
+			finish = false;
+		}
+		var key_id = $(e.target)[0].id
+		var input = $('#'+key_id).html();
+
+		input_stack.push(input);
+		input_stack.push('(');
+		refresh_display();
+	});
+
+	$('#backspace').click(()=>{
+		input_stack.pop();
+		refresh_display();
+	});
+
+	$('#AC').click(()=>{
+		input_stack.length = 0;
+		refresh_display();
+	});
+
+	$('#equal').click(() => {
+		var result = solve(make_tokens(input_stack.join(""))).toString();
+		$('#math').prop('readonly', false);
+		$('#math').val(result);
+		$('#math').prop('readonly', true);
+
+		input_stack.length = 0;
+		
+		//check if result is too long and cannot be displayed
+		if(result.length > 25)
+		{
+			result = result.slice(0,25);
+		}
+		input_stack.push(result);
+
+		finish = true;
+	});
+
 });
+
+function refresh_display()
+{
+	$('#math').prop('readonly', false);
+	$('#math').val(input_stack.join(""));
+	$('#math').prop('readonly', true);
+}
 
 function solve(t)
 {
@@ -206,10 +276,13 @@ function calculate(op, a, b)
 {
 	var select = {
 		'*': mul(a, b),
+		'×': mul(a, b),
 		'x': mul(a, b),
 		'/': div(a, b),
+		'÷': div(a, b),
 		'+': add(a, b),
-		'-': sub(a, b)
+		'-': sub(a, b),
+		'−': sub(a, b)
 	}
 	return select[op];
 }

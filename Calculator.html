@@ -23,7 +23,7 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <div class="form-group">
-                <input type="text" class="form-control" id="math" placeholder="-">
+                <!-- <input type="text" class="form-control" id="math" placeholder="-"> -->
               </div>
             </li>
         </ul>
@@ -43,7 +43,7 @@
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <div class="container" id="calculator">
       <div class="row" id="display">
-        <input type="text" class="form-control" id="math" placeholder=".0" readonly> 
+        <input type="text" class="form-control" id="math" placeholder="0."> 
       </div>
       <div class="row">
         <div class="container" id ="keypad">
@@ -52,48 +52,48 @@
               <div class="container" id="lhs_keypad">
                 <div class="row">
                   <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">1</button>
+                    <button type="button" class="btn btn-dark keypad_n" id="n_1" data-value="1">1</button>
                   </div>
                   <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">2</button>
+                    <button type="button" class="btn btn-dark keypad_n" id="n_2">2</button>
                   </div>
                   <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">3</button>
-                  </div>
-                  <div class="w-100"></div>
-                  <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">4</button>
-                  </div>
-                  <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">5</button>
-                  </div>
-                  <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">6</button>
+                    <button type="button" class="btn btn-dark keypad_n" id="n_3">3</button>
                   </div>
                   <div class="w-100"></div>
                   <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">7</button>
+                    <button type="button" class="btn btn-dark keypad_n" id="n_4">4</button>
                   </div>
                   <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">8</button>
+                    <button type="button" class="btn btn-dark keypad_n" id="n_5">5</button>
                   </div>
                   <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">9</button>
+                    <button type="button" class="btn btn-dark keypad_n" id="n_6">6</button>
                   </div>
                   <div class="w-100"></div>
                   <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">0</button>
+                    <button type="button" class="btn btn-dark keypad_n" id="n_7">7</button>
                   </div>
                   <div class="col">
-                    <button type="button" class="btn btn-dark" id="n_1">.</button>
+                    <button type="button" class="btn btn-dark keypad_n" id="n_8">8</button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark keypad_n" id="n_9">9</button>
+                  </div>
+                  <div class="w-100"></div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark keypad_n" id="n_0">0</button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark keypad_n" id="n_period">.</button>
                   </div>
                   <div class="col">
                     <div class="row" id="paranthesis">
                       <div class="col">
-                        <button type="button" class="btn btn-dark" id="n_1">(</button>
+                        <button type="button" class="btn btn-dark keypad_n" id="open_par">(</button>
                       </div>
                       <div class="col">
-                        <button type="button" class="btn btn-dark" id="n_1">)</button>
+                        <button type="button" class="btn btn-dark keypad_n" id="close_par">)</button>
                       </div>
                     </div>
                   </div>
@@ -106,10 +106,10 @@
                 <div class="container" id="cursor">
                   <div class="row">
                     <div class="col">
-                      <button type="button" class="btn btn-dark" id="backspace"><</button>
+                      <button type="button" class="btn btn-dark keypad_cursor" id="backspace"><</button>
                     </div>
                     <div class="col">
-                      <button type="button" class="btn btn-dark" id="AC">AC</button>
+                      <button type="button" class="btn btn-dark keypad_cursor" id="AC">AC</button>
                     </div>
                   </div>
                 </div>
@@ -117,31 +117,31 @@
                 <div class="container" id="operators">
                   <div class="row">
                     <div class="col">
-                      <button type="button" class="btn btn-dark" id="times">x</button>
+                      <button type="button" class="btn btn-dark keypad_op" id="times">×</button>
                     </div>
                     <div class="col">
-                      <button type="button" class="btn btn-dark" id="divide">/</button>
+                      <button type="button" class="btn btn-dark keypad_op" id="divide">÷</button>
                     </div>
                     <div class="w-100"></div>
                     <div class="col">
-                      <button type="button" class="btn btn-dark" id="add">+</button>
+                      <button type="button" class="btn btn-dark keypad_op" id="add">+</button>
                     </div>
                     <div class="col">
-                      <button type="button" class="btn btn-dark" id="subtract">-</button>
+                      <button type="button" class="btn btn-dark keypad_op" id="subtract">−</button>
                     </div>
                     <div class="w-100"></div>
                                       <div class="col">
                     <div class="row" id="trig">
                       <div class="col">
-                        <button type="button" class="btn btn-dark" id="sin">sin</button>
+                        <button type="button" class="btn btn-dark keypad_trig" id="sin">sin</button>
                       </div>
                       <div class="col">
-                        <button type="button" class="btn btn-dark" id="cos">cos</button>
+                        <button type="button" class="btn btn-dark keypad_trig" id="cos">cos</button>
                       </div>
                     </div>
                   </div>
                     <div class="col">
-                      <button type="button" class="btn btn-dark" id="equal">=</button>
+                      <button type="button" class="btn btn-dark keypad_equal" id="equal">=</button>
                     </div>
                   </div>
                 </div>

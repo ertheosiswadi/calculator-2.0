@@ -1,7 +1,8 @@
 #math{
 
     height: 64px;
-    direction: rtl;
+    text-align: right;
+    font-size: 2.3rem;
 }
 div#calculator
 {
@@ -29,7 +30,7 @@ div#rhs_keypad
 
 div.col-8
 {
-	background-color: #C8C8C8C8C8C8;
+	background-color: #C8C8C8;
 
     padding-right: 20px;
     padding-left: 20px;
