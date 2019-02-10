@@ -184,7 +184,12 @@ function make_tokens(input)//input is a string and not an array, careful
 	var n_period = 0;
 	var layer = 0;
 
-	Array.from(input).forEach((e) => {
+	var e;
+	// Array.from(input).forEach((e) =>
+	for(i = 0; i < input.length; i++)
+	 {
+	 	e = input[i];
+		console.log('E is: ', e);
 		if(!isWhitespace(e))
 		{
 			if(!collect)
@@ -216,7 +221,7 @@ function make_tokens(input)//input is a string and not an array, careful
 					console.log('length toRet: ',toReturn.length)
 					if(toReturn.length > 0)
 					{
-						console.log(isOperator(toReturn[toReturn.length-1]), 'e: ', toReturn[toReturn.length-1]);
+						
 						if(isOperator(e) && isOperator(toReturn[toReturn.length -1]))
 						{
 							throw "♥ SYNTAX ERROR ♥";
@@ -245,6 +250,9 @@ function make_tokens(input)//input is a string and not an array, careful
 				else
 				{
 					e = ifOperator(e);
+					collect = false;
+					toReturn.push(token);
+					
 
 					if((layer = updateLayer(e, layer)) < 0)
 					{
@@ -252,22 +260,23 @@ function make_tokens(input)//input is a string and not an array, careful
 					}
 					if(toReturn.length > 0)
 					{
-						if(isOperator(e) && isOperator(toReturn[toReturn.length -1]))
+						if(isOperator(e) && isOperator(toReturn[toReturn.length - 1]))
 						{
 							throw "♥ SYNTAX ERROR ♥";
 						}
 					}
 
-					collect = false;
-					toReturn.push(token);
+
 					n_period = 0;
 					token = e;
 					toReturn.push(token);
 				}
 			}
-			console.log('token: ', token, ' collect: ', collect, ' e: ', e, ' toReturn: ', toReturn);
+			// console.log('token: ', token, ' collect: ', collect, ' e: ', e, ' toReturn: ', toReturn);
 		}	
-	});
+	}
+	// );
+	console.log('final toReturn:', toReturn.length);
 
 	if(collect)
 		toReturn.push(token);
