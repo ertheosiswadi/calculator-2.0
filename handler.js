@@ -27,7 +27,14 @@ $(document).ready(() =>{
 		var key_id = $(e.target)[0].id
 		var input = $('#'+key_id).html();
 
-		input_stack.push(input);
+		var map_operator = {
+			'×':'*',
+			'÷':'/',
+			'−':'-',
+			'+': '+'
+		}
+
+		input_stack.push(map_operator[input]);
 		refresh_display();
 	})
 
@@ -163,6 +170,7 @@ function make_tokens(input)//input is a string and not an array, careful
 	var collect = false;
 	var token = '';
 	var toReturn = [];
+
 	Array.from(input).forEach((e) => {
 		if(!isWhitespace(e))
 		{
@@ -196,6 +204,7 @@ function make_tokens(input)//input is a string and not an array, careful
 			console.log('token: ', token, ' collect: ', collect, ' e: ', e, ' toReturn: ', toReturn);
 		}	
 	});
+	
 	if(collect)
 		toReturn.push(token);
 
@@ -252,20 +261,33 @@ function solve_2(tokens)
 		return calculate(op, arg_1, arg_2);
 	}
 	else
-	{
-		for(i = 1; i < tokens.length; i += 2)
+	{	
+		var start = 1;
+		//check if it starts with an operator, treat it as a sign
+		if(tokens[0] == '+') 
+		{
+			start = 2;
+		}
+		else if (tokens[0] == '-')
+		{
+			tokens[1] = '-' + tokens[1];
+			tokens.shift();
+		}
+
+		console.log('tokens0: ', tokens[0], ' start: ', start);
+		for(i = start; i < tokens.length; i += 2)
 		{
 			if(tokens[i] == '+' || tokens[i] == '-')
 			{
 				var op = tokens[i];
-				var arg_1 = solve_2(tokens.slice(0,i));
+				var arg_1 = solve_2(tokens.slice(start-1,i));
 				var arg_2 = solve_2(tokens.slice(i + 1));
 
 				return calculate(op, arg_1, arg_2);
 			}
 		}
 		var op = tokens[tokens.length-2];
-		var arg_1 = solve_2(tokens.slice(0, tokens.length-2));
+		var arg_1 = solve_2(tokens.slice(start-1, tokens.length-2));
 		var arg_2 = tokens[tokens.length -1];
 
 		return calculate(op, arg_1, arg_2);
