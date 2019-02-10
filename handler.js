@@ -2,13 +2,6 @@ var input_stack = [];
 var finish = false;
 
 $(document).ready(() =>{
-	$('#confirmButton').click(() => {
-		console.log("---------");
-		var string = $('#math').val();
-		console.log('original: ', string);
-		console.log('answer: ', solve(make_tokens(string)));
-	});
-
 	$('.keypad_n').click((e)=>{
 		if(finish)
 		{
@@ -56,21 +49,43 @@ $(document).ready(() =>{
 	});
 
 	$('#equal').click(() => {
-		var result = solve(make_tokens(input_stack.join(""))).toString();
-		$('#math').prop('readonly', false);
-		$('#math').val(result);
-		$('#math').prop('readonly', true);
-
-		input_stack.length = 0;
-		
-		//check if result is too long and cannot be displayed
-		if(result.length > 25)
+		var result = '';
+		try
 		{
-			result = result.slice(0,25);
-		}
-		input_stack.push(result);
+			result = solve(make_tokens(input_stack.join("")));
+			if(isNaN(result))
+			{
+				throw "♥ SYNTAX ERROR ♥"; 
+			}
+			else if(result == Infinity)
+			{
+				throw "◈ MATH ERROR ◈"; 
+			}
+			result = result.toString();
+			//check if result is too long and cannot be displayed
+			if(result.length > 17) //refactor and make a global constant
+			{
+				result = result.slice(0,17);
+			}
+			$('#math').prop('readonly', false);
+			$('#math').val(result);
+			$('#math').prop('readonly', true);
 
-		finish = true;
+			input_stack.length = 0;
+			input_stack.push(result);
+
+			finish = true;
+		}
+		catch(err)
+		{
+			console.error(err);
+			$('#math').prop('readonly', false);
+			$('#math').val(err);
+			$('#math').prop('readonly', true);
+
+			input_stack.length = 0;
+			finish = true;
+		}
 	});
 
 });
@@ -101,7 +116,7 @@ function solve(t)
 			}
 			else if(e == ')')
 			{
-				//throw error
+				throw "♥ SYNTAX ERROR ♥";
 			}
 			else if(e == 'sin' || e == 'cos')
 			{
@@ -117,6 +132,10 @@ function solve(t)
 		{
 			if(e == ')' && layer == 0) //end
 			{
+				if(inner_bf.length == 0)
+				{
+					throw "♥ SYNTAX ERROR ♥"; 
+				}
 				if(trig)
 				{
 					if(trig_func == 'sin')
@@ -129,7 +148,6 @@ function solve(t)
 						let result = Math.cos(solve(inner_bf));
 						outer_bf.push(result.toString());
 					}
-
 				}
 				else
 				{
@@ -163,35 +181,86 @@ function make_tokens(input)//input is a string and not an array, careful
 	var collect = false;
 	var token = '';
 	var toReturn = [];
+	var n_period = 0;
+	var layer = 0;
 
 	Array.from(input).forEach((e) => {
 		if(!isWhitespace(e))
 		{
 			if(!collect)
 			{
-				if(isNumber(e) || isAlphabet(e))
+				if(isNumber(e) || isPeriod(e) || isAlphabet(e))
 				{
+					if(isPeriod(e))//refactor
+					{
+						n_period++;
+					}
+					if(n_period > 1)//too many periods
+					{
+						throw "♥ SYNTAX ERROR ♥";
+					}
+
 					collect = true;
 					token = e;
 				}
 				else
 				{
 					e = ifOperator(e);
+
+					if((layer = updateLayer(e, layer)) < 0)
+					{
+						throw "♥ SYNTAX ERROR ♥";
+					}
+					// console.log(isOperator(e), 'e: ', e, 'toReturn: ', toReturn);
+					
+					console.log('length toRet: ',toReturn.length)
+					if(toReturn.length > 0)
+					{
+						console.log(isOperator(toReturn[toReturn.length-1]), 'e: ', toReturn[toReturn.length-1]);
+						if(isOperator(e) && isOperator(toReturn[toReturn.length -1]))
+						{
+							throw "♥ SYNTAX ERROR ♥";
+						}
+					}
+					
 					token = e;
 					toReturn.push(e);
 				}
 			}
 			else
 			{
-				if(isNumber(e) || isAlphabet(e))
+				if(isNumber(e) || isPeriod(e) || isAlphabet(e))
 				{
+					if(isPeriod(e))
+					{
+						n_period++;
+					}
+					if(n_period > 1)//too many periods
+					{
+						throw "♥ SYNTAX ERROR ♥";
+					}
+
 					token += e;
 				}
 				else
 				{
 					e = ifOperator(e);
+
+					if((layer = updateLayer(e, layer)) < 0)
+					{
+						throw "♥ SYNTAX ERROR ♥";
+					}
+					if(toReturn.length > 0)
+					{
+						if(isOperator(e) && isOperator(toReturn[toReturn.length -1]))
+						{
+							throw "♥ SYNTAX ERROR ♥";
+						}
+					}
+
 					collect = false;
 					toReturn.push(token);
+					n_period = 0;
 					token = e;
 					toReturn.push(token);
 				}
@@ -203,8 +272,26 @@ function make_tokens(input)//input is a string and not an array, careful
 	if(collect)
 		toReturn.push(token);
 
+	if(layer != 0)
+	{
+		throw "♥ SYNTAX ERROR ♥";
+	}
+
 	console.log('tokens: ', toReturn);
 	return toReturn;
+}
+
+function updateLayer(c, layer)
+{
+	if(isOpenParanthesis(c))
+	{
+		layer++;
+	}
+	else if(isCloseParanthesis(c))
+	{
+		layer--;
+	}
+	return layer;
 }
 
 //filter. if character is an operator, make sure it is the symbol we are using and not the one on display
@@ -216,8 +303,7 @@ function ifOperator(c)
 		'−':'-',
 		'+': '+'
 	};
-	let operators = /[×÷−+]/
-	if(c.match(operators))
+	if(isOperator(c))
 	{
 		return map_operator[c];
 	}
@@ -225,6 +311,24 @@ function ifOperator(c)
 	{
 		return c;
 	}
+}
+function isOperator(c)
+{
+	let operators = /[×÷−+\-+*/]/;
+	if(c.match(operators) != null)
+	{	
+		return true;
+	}
+	return false;
+}
+
+function isOpenParanthesis(c)
+{
+	return (c == '(');
+}
+function isCloseParanthesis(c)
+{
+	return (c == ')');
 }
 
 function isWhitespace(c)
@@ -249,7 +353,17 @@ function isAlphabet(c)
 
 function isNumber(c)
 {
-	let number = /[0-9\.]/;
+	let number = /[0-9]/;
+	if(c.match(number) != null)
+	{
+		return true;
+	}
+	return false;
+}
+
+function isPeriod(c)
+{
+	let number = /[\.]/;
 	if(c.match(number) != null)
 	{
 		return true;
