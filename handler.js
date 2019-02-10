@@ -27,14 +27,7 @@ $(document).ready(() =>{
 		var key_id = $(e.target)[0].id
 		var input = $('#'+key_id).html();
 
-		var map_operator = {
-			'×':'*',
-			'÷':'/',
-			'−':'-',
-			'+': '+'
-		}
-
-		input_stack.push(map_operator[input]);
+		input_stack.push(input);
 		refresh_display();
 	})
 
@@ -183,6 +176,7 @@ function make_tokens(input)//input is a string and not an array, careful
 				}
 				else
 				{
+					e = ifOperator(e);
 					token = e;
 					toReturn.push(e);
 				}
@@ -195,6 +189,7 @@ function make_tokens(input)//input is a string and not an array, careful
 				}
 				else
 				{
+					e = ifOperator(e);
 					collect = false;
 					toReturn.push(token);
 					token = e;
@@ -204,12 +199,32 @@ function make_tokens(input)//input is a string and not an array, careful
 			console.log('token: ', token, ' collect: ', collect, ' e: ', e, ' toReturn: ', toReturn);
 		}	
 	});
-	
+
 	if(collect)
 		toReturn.push(token);
 
 	console.log('tokens: ', toReturn);
 	return toReturn;
+}
+
+//filter. if character is an operator, make sure it is the symbol we are using and not the one on display
+function ifOperator(c)
+{
+	var map_operator = {
+		'×':'*',
+		'÷':'/',
+		'−':'-',
+		'+': '+'
+	};
+	let operators = /[×÷−+]/
+	if(c.match(operators))
+	{
+		return map_operator[c];
+	}
+	else
+	{
+		return c;
+	}
 }
 
 function isWhitespace(c)
