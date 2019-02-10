@@ -1,0 +1,120 @@
+#math{
+
+    height: 64px;
+    direction: rtl;
+}
+div#calculator
+{
+	background-color:#C8C8C8;
+	max-width: 700px;
+	min-height: 300px;
+}
+
+div#keypad
+{
+	background-color:#C8C8C8;
+}
+
+div#lhs_keypad
+{
+	margin-bottom: 20px;
+    margin-top: 20px;
+
+}
+div#rhs_keypad
+{
+	margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+div.col-8
+{
+	background-color: #C8C8C8C8C8C8;
+
+    padding-right: 20px;
+    padding-left: 20px;
+
+}
+
+div.col{
+	
+	/*border-color: #000000;*/
+	/*border-style: solid;*/
+	/*background-color: #FFFFFF;*/
+	/*
+	border-left-width: : 15px;
+	border-right-width: 0px;
+	border-top: 0px;
+	border-bottom: 0px;*/
+}
+
+div#lhs_keypad div.col
+{
+	min-height: 55px;
+	padding-right: 0px;
+	padding-left: 0px;
+}
+
+div#lhs_keypad{
+	border-radius: 25px;
+	background-color: #343a40;
+}
+
+
+#display{
+
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+
+}
+#paranthesis
+{
+	margin-right: 0px;
+	margin-left: 0px;
+}
+#trig
+{
+	margin-right: 0px;
+	margin-left: 0px;
+}
+#operators
+{
+	border-radius: 25px;
+	background-color: #343a40;
+}
+#cursor{
+	margin-top: 20px;
+	margin-bottom: 20px;
+	/*max-height: 30px;*/
+	border-radius: 25px;
+	background-color: #E2E2E2;
+}
+#cursor .btn-dark
+{
+	background-color: #E2E2E2;
+	border-color: #E2E2E2;
+	color: #797979;
+}
+#equal
+{
+	background-color: #E2E2E2;
+	border-color: #E2E2E2;
+	color: #797979;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+button.btn-dark
+{
+	width:100%;
+	height:100%;
+}
+
+div#rhs_keypad div.col
+{
+	padding-right: 0px;
+	padding-left: 0px;
+}
+

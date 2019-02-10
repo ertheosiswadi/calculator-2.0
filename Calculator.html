@@ -1,0 +1,165 @@
+<!-- Print settings -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calculator 2.0</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <style>
+      .navbar{
+        margin-bottom:0;
+        border-radius:0;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="panel-body">
+        <div class="card">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div class="form-group">
+                <input type="text" class="form-control" id="math" placeholder="-">
+              </div>
+            </li>
+        </ul>
+        </div>
+      </div>
+      
+      <div class="container text-center">
+        <a id="confirmButton" class="btn btn-success btn-lg btn-block">Confirm</a>
+      </div>
+      <div class="container text-center">
+        <a id="sin" class="btn btn-success btn-lg btn-block">sin</a>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <div class="container" id="calculator">
+      <div class="row" id="display">
+        <input type="text" class="form-control" id="math" placeholder=".0" readonly> 
+      </div>
+      <div class="row">
+        <div class="container" id ="keypad">
+          <div class="row">
+            <div class="col-8" style="align-items: center;display: flex;justify-content: center;">
+              <div class="container" id="lhs_keypad">
+                <div class="row">
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">1</button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">2</button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">3</button>
+                  </div>
+                  <div class="w-100"></div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">4</button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">5</button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">6</button>
+                  </div>
+                  <div class="w-100"></div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">7</button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">8</button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">9</button>
+                  </div>
+                  <div class="w-100"></div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">0</button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-dark" id="n_1">.</button>
+                  </div>
+                  <div class="col">
+                    <div class="row" id="paranthesis">
+                      <div class="col">
+                        <button type="button" class="btn btn-dark" id="n_1">(</button>
+                      </div>
+                      <div class="col">
+                        <button type="button" class="btn btn-dark" id="n_1">)</button>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="container" id="rhs_keypad">
+                <div class="container" id="cursor">
+                  <div class="row">
+                    <div class="col">
+                      <button type="button" class="btn btn-dark" id="backspace"><</button>
+                    </div>
+                    <div class="col">
+                      <button type="button" class="btn btn-dark" id="AC">AC</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="container" id="operators">
+                  <div class="row">
+                    <div class="col">
+                      <button type="button" class="btn btn-dark" id="times">x</button>
+                    </div>
+                    <div class="col">
+                      <button type="button" class="btn btn-dark" id="divide">/</button>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col">
+                      <button type="button" class="btn btn-dark" id="add">+</button>
+                    </div>
+                    <div class="col">
+                      <button type="button" class="btn btn-dark" id="subtract">-</button>
+                    </div>
+                    <div class="w-100"></div>
+                                      <div class="col">
+                    <div class="row" id="trig">
+                      <div class="col">
+                        <button type="button" class="btn btn-dark" id="sin">sin</button>
+                      </div>
+                      <div class="col">
+                        <button type="button" class="btn btn-dark" id="cos">cos</button>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="col">
+                      <button type="button" class="btn btn-dark" id="equal">=</button>
+                    </div>
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:400px"></div>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script src="./Solve.js"></script>
+  </body>
+</html>
