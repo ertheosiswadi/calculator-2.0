@@ -1,3 +1,5 @@
+const JS_MAX = 9007199254740991;
+
 function update_period(e, n_period)
 {
 	if(isPeriod(e))
@@ -15,6 +17,20 @@ function update_layer(c, layer)
 	return layer;
 }
 
+function get_function_result(func_name, inner_bf)
+{
+	let result_inner = solve(inner_bf);
+	let func_obj = {
+		"sin" : Math.sin(result_inner),
+		"cos" : Math.cos(result_inner),
+		"tan" : Math.tan(result_inner),
+		"sqrt": Math.sqrt(result_inner)
+	}
+	var to_return = func_obj[func_name];
+	if(isNaN(to_return))
+		throw math_error;
+	return to_return;
+}
 
 //filter. if character is an operator, make sure it is the symbol we are using and not the one on display
 function get_operator(c)
@@ -37,6 +53,11 @@ function get_operator(c)
 	{
 		return c;
 	}
+}
+function is_function(e)
+{
+	var func_list = ["sin", "cos", "tan", "sqrt"];
+	return func_list.includes(e);
 }
 function isOperator(c)
 {
@@ -131,3 +152,5 @@ function sub(a, b)
 {
 	return a - b;
 }
+
+

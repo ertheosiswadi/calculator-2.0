@@ -10,7 +10,7 @@ div#calculator
 	max-width: 700px;
 	border-radius: 5px;
 	margin-bottom: 10px;
-    height: 350px;
+    /*height: 350px;*/
     margin-top: 10px;
 }
 
@@ -54,7 +54,7 @@ div.col{
 
 div#lhs_keypad div.col
 {
-	min-height: 55px;
+	min-height: 72px;
 	padding-right: 0px;
 	padding-left: 0px;
 }

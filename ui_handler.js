@@ -1,5 +1,6 @@
 var input_stack = [];
 var finish = false;
+const MAX_DIGITS = 17;
 
 $(document).ready(() =>{
 	$('.keypad_n').click((e)=>{
@@ -57,22 +58,15 @@ $(document).ready(() =>{
 				result = solve(make_tokens(input_stack.join("")));
 				if(isNaN(result))
 				{
-					console.log(result);
 					throw syntax_error; 
 				}
 				else if(result == Infinity)
 				{
 					throw math_error; 
 				}
-				result = result.toString();
-				//check if result is too long and cannot be displayed
-				if(result.length > 17 && result.includes('.')) //refactor and make a global constant
-				{
-					result = result.slice(0,17);
-				}
-				$('#math').prop('readonly', false);
-				$('#math').val(result);
-				$('#math').prop('readonly', true);
+
+				result = control_n_digits(result.toString());
+				display(result);
 
 				input_stack.length = 0;
 				input_stack.push(result);
@@ -86,9 +80,7 @@ $(document).ready(() =>{
 				{
 					err.message = '♥ SYNTAX ERROR ♥'
 				}
-				$('#math').prop('readonly', false);
-				$('#math').val(err.message);
-				$('#math').prop('readonly', true);
+				display(err.message);
 
 				input_stack.length = 0;
 				finish = true;
@@ -100,7 +92,22 @@ $(document).ready(() =>{
 
 function refresh_display()
 {
+	display(input_stack.join(""));
+}
+
+function display(message)
+{
 	$('#math').prop('readonly', false);
-	$('#math').val(input_stack.join(""));
+	$('#math').val(message);
 	$('#math').prop('readonly', true);
+}
+
+function control_n_digits(result)
+{
+	//check if result is too long and cannot be displayed
+	if(result.length > MAX_DIGITS && result.includes('.')) //refactor and make a global constant
+	{
+		result = result.slice(0, MAX_DIGITS);
+	}
+	return result;
 }
